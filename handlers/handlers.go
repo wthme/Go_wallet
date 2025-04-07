@@ -19,7 +19,9 @@ func NewWalletHandler(service service.WalletService) *WalletHandler {
 }
 
 func (h *WalletHandler) HandleWalletOperation(c *gin.Context) {
+
 	var op model.WalletOperation
+	
 	if err := c.ShouldBindJSON(&op); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -43,13 +45,18 @@ func (h *WalletHandler) HandleWalletOperation(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }
 
+
+
 func (h *WalletHandler) GetWalletBalance(c *gin.Context) {
+
 	walletIDStr := c.Param("walletId")
+
 	walletID, err := uuid.Parse(walletIDStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid wallet ID"})
 		return
 	}
+
 
 	balance, err := h.service.GetWalletBalance(c.Request.Context(), walletID)
 	if err != nil {
