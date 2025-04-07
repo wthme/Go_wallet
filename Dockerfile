@@ -18,4 +18,4 @@ COPY config.env .
 
 EXPOSE 8080
 
-ENTRYPOINT ["/Go_wallet/"]
+# ENTRYPOINT ["app/Go_wallet.exe"]

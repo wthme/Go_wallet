@@ -39,19 +39,13 @@ func main() {
 	log.Println("Wallets table ready")
 
 
-	randuuid := "80ac1149-9777-4e18-889d-0372cf95019e"
-
-	dbPool.Exec(context.Background() , "UPDATE wallets SET balance = 34568 WHERE id = $1" , randuuid)
-
-
-
+	// randuuid := "80ac1149-9777-4e18-889d-0372cf95019e"
+	// dbPool.Exec(context.Background() , "UPDATE wallets SET balance = 34568 WHERE id = $1" , randuuid)
 
 
 	// Initialize repository, service and handler
 	walletdb := pglogic.NewWalletdb(dbPool)
 	walletHandler := handler.NewWalletHandler(*walletdb)
-
-
 
 	// Set up Gin router
 	router := gin.Default()
@@ -65,14 +59,12 @@ func main() {
 	}
 
 
-
 	// Start server
 	err = router.Run(":" + os.Getenv("SERVER_PORT")) ; if err != nil{
 		log.Fatalf("Problem with starting server %v", err)
 	}
 
 }
-
 
 
 func getDSN() string {
