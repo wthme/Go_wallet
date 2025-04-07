@@ -22,15 +22,6 @@ func NewWalletHandler(wallet pglogic.Walletdb) *WalletHandler {
 
 func (h *WalletHandler) HandleWalletOperation(c *gin.Context) {
 
-
-	fmt.Println(c.Param("operationType"))
-
-	// if amount <= 0 {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "amount must be positive"})
-	// 	return
-	// }
-
-
 	var op model.WalletOperation
 	
 	if err := c.BindJSON(&op); err != nil {
@@ -38,7 +29,7 @@ func (h *WalletHandler) HandleWalletOperation(c *gin.Context) {
 		return
 	}
 	
-	fmt.Printf("%v   %v %v", op.Amount , op.OperationType , op.WalletID)
+	fmt.Printf("%v %v %v", op.Amount , op.OperationType , op.WalletID)
 
 
 	if op.OperationType != model.DEPOSIT && op.OperationType != model.WITHDRAW {
@@ -58,13 +49,6 @@ func (h *WalletHandler) HandleWalletOperation(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }
-
-
-
-
-
-
-
 
 
 func (h *WalletHandler) GetWalletBalance(c *gin.Context) {
