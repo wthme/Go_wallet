@@ -43,23 +43,18 @@ func main() {
 	// dbPool.Exec(context.Background() , "UPDATE wallets SET balance = 34568 WHERE id = $1" , randuuid)
 
 
-	// Initialize repository, service and handler
 	walletdb := pglogic.NewWalletdb(dbPool)
 	walletHandler := handler.NewWalletHandler(*walletdb)
 
-	// Set up Gin router
+
 	router := gin.Default()
 
-	// API routes
 	api := router.Group("/api/v1")
-
 	{
 		api.POST("/wallets", walletHandler.HandleWalletOperation)
 		api.GET("/wallets/:walletId", walletHandler.GetWalletBalance)
 	}
 
-
-	// Start server
 	err = router.Run(":" + os.Getenv("SERVER_PORT")) ; if err != nil{
 		log.Fatalf("Problem with starting server %v", err)
 	}

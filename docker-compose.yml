@@ -11,7 +11,7 @@ services:
       - .:/app
     depends_on:
       - wallet-db
-    # command: [go run main.go]
+    restart: unless-stopped
   
   wallet-db:
     image: postgres:15-alpine     

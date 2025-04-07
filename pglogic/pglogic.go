@@ -55,7 +55,6 @@ func (r *Walletdb) UpdateWalletBalance(ctx context.Context, walletID uuid.UUID, 
 	}
 	defer tx.Rollback(ctx)
 
-	// Use SELECT FOR UPDATE to lock the row
 	var balance float64
 
 	err = tx.QueryRow(ctx,
@@ -65,7 +64,6 @@ func (r *Walletdb) UpdateWalletBalance(ctx context.Context, walletID uuid.UUID, 
 		return fmt.Errorf("failed to lock wallet: %w", err)
 	}
 
-	// Update the balance
 	newBalance := balance + amount
 	if newBalance < 0 {
 		return fmt.Errorf("insufficient funds")
@@ -105,26 +103,22 @@ func InitDB(db *pgxpool.Pool) error {
 
 
 func (s * Walletdb) ProcessOperation(ctx context.Context, op model.WalletOperation) error {
-	// Check if wallet exists
+
 	wallet, err := s.GetWallet(ctx, op.WalletID)
 	if err != nil {
 		return err
 	}
 
-	// Create wallet if it doesn't exist
 	if wallet == nil {
 		if err := s.CreateWallet(ctx, op.WalletID); err != nil {
 			return err
 		}
 	}
 
-	// Adjust amount based on operation type
 	amount := op.Amount
 	if op.OperationType == model.WITHDRAW {
 		amount = -amount
 	}
-
-	// Update balance
 	return s.UpdateWalletBalance(ctx, op.WalletID, amount)
 }
 
