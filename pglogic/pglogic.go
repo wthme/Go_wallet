@@ -16,18 +16,19 @@ type Wallet_actions interface {
 	UpdateWalletBalance(ctx context.Context, walletID uuid.UUID, amount float64) error
 	CreateWallet(ctx context.Context, walletID uuid.UUID) error
 	ProcessOperation(ctx context.Context, op model.WalletOperation) error
+	GetWalletBalance(ctx context.Context, walletID uuid.UUID) (float64, error)
 }
 
-type walletdb struct {
+type Walletdb struct {
 	db *pgxpool.Pool
 }
 
-func NewWalletdb(db *pgxpool.Pool) *walletdb {
-	return &walletdb{db: db}
+func NewWalletdb(db *pgxpool.Pool) *Walletdb {
+	return &Walletdb{db: db}
 }
 
 
-func (r *walletdb) GetWallet(ctx context.Context, walletID uuid.UUID) (*model.Wallet, error) {
+func (r *Walletdb) GetWallet(ctx context.Context, walletID uuid.UUID) (*model.Wallet, error) {
 
 	var wallet model.Wallet
 	err := r.db.QueryRow(ctx,
@@ -47,7 +48,7 @@ func (r *walletdb) GetWallet(ctx context.Context, walletID uuid.UUID) (*model.Wa
 
 
 
-func (r *walletdb) UpdateWalletBalance(ctx context.Context, walletID uuid.UUID, amount float64) error {
+func (r *Walletdb) UpdateWalletBalance(ctx context.Context, walletID uuid.UUID, amount float64) error {
 	tx, err := r.db.Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
@@ -81,7 +82,7 @@ func (r *walletdb) UpdateWalletBalance(ctx context.Context, walletID uuid.UUID, 
 
 
 
-func (r *walletdb) CreateWallet(ctx context.Context, walletID uuid.UUID) error {
+func (r *Walletdb) CreateWallet(ctx context.Context, walletID uuid.UUID) error {
 	_, err := r.db.Exec(ctx,
 		"INSERT INTO wallets (id, balance) VALUES ($1, 0)", walletID)
 	if err != nil {
@@ -103,7 +104,7 @@ func InitDB(db *pgxpool.Pool) error {
 }
 
 
-func (s * walletdb) ProcessOperation(ctx context.Context, op model.WalletOperation) error {
+func (s * Walletdb) ProcessOperation(ctx context.Context, op model.WalletOperation) error {
 	// Check if wallet exists
 	wallet, err := s.GetWallet(ctx, op.WalletID)
 	if err != nil {
@@ -125,4 +126,18 @@ func (s * walletdb) ProcessOperation(ctx context.Context, op model.WalletOperati
 
 	// Update balance
 	return s.UpdateWalletBalance(ctx, op.WalletID, amount)
+}
+
+
+
+
+func (s *Walletdb) GetWalletBalance(ctx context.Context, walletID uuid.UUID) (float64, error) {
+	wallet, err := s.GetWallet(ctx, walletID)
+	if err != nil {
+		return 0, err
+	}
+	if wallet == nil {
+		return 0, nil
+	}
+	return wallet.Balance, nil
 }

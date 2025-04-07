@@ -3,13 +3,11 @@ package main
 import (
 	handler "Go_wallet/handlers"
 	"Go_wallet/pglogic"
-	"Go_wallet/service"
 	"context"
 	"log"
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
@@ -35,31 +33,34 @@ func main() {
 
 
 	if err!= nil{
-		log.Fatal("Can`t get table: %v\n", err)
+		log.Fatalf("Can`t get table: %v\n", err)
 	}
 
 	log.Println("Wallets table ready")
 
 
-	randuuid := uuid.New()
-	dbPool.Exec(context.Background() , "INSERT INTO wallets (id, balance) VALUES ($1, 14000.56)" , randuuid)
+	randuuid := "80ac1149-9777-4e18-889d-0372cf95019e"
+
+	dbPool.Exec(context.Background() , "UPDATE wallets SET balance = 34568 WHERE id = $1" , randuuid)
+
+
 
 
 
 	// Initialize repository, service and handler
 	walletdb := pglogic.NewWalletdb(dbPool)
-	walletService := service.NewWalletService(walletdb)
-	walletHandler := handler.NewWalletHandler(walletService)
+	walletHandler := handler.NewWalletHandler(*walletdb)
 
 
-	
+
 	// Set up Gin router
 	router := gin.Default()
 
 	// API routes
 	api := router.Group("/api/v1")
+
 	{
-		api.POST("/wallet", walletHandler.HandleWalletOperation)
+		api.POST("/wallets", walletHandler.HandleWalletOperation)
 		api.GET("/wallets/:walletId", walletHandler.GetWalletBalance)
 	}
 
@@ -67,14 +68,9 @@ func main() {
 
 	// Start server
 	err = router.Run(":" + os.Getenv("SERVER_PORT")) ; if err != nil{
-		log.Fatalf("Problem with starting server %v" , err)
+		log.Fatalf("Problem with starting server %v", err)
 	}
 
-
-	// port := os.Getenv("SERVER_PORT")
-	// log.Printf("Server running on port %s", port)
-
-	// log.Fatal(router.Run(":" + port))
 }
 
 
