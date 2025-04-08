@@ -15,10 +15,6 @@ services:
   wallet-db:
     container_name: valet
     image: postgres:15-alpine
-    environment:
-      - POSTGRES_PASSWORD={PG_PASSWORD}
-      - POSTGRES_USER={PG_USER}
-      - POSTGRES_DB={PG_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data  
     ports:

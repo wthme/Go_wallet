@@ -18,7 +18,7 @@ func main() {
 		log.Fatalf("Error loading config.env file: %v", err)
 	}
 
-	dbPool, err := pgxpool.New(context.Background(), "postgresql://postgres:12345@valet:5432/postgres")
+	dbPool, err := pgxpool.New(context.Background(), "postgresql://postgres:postgres@valet:5432/postgres")
 	if err != nil {
 		log.Fatalf("Unable to connect to database: %v\n", err)
 	}
