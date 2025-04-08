@@ -27,7 +27,6 @@ func NewWalletdb(db *pgxpool.Pool) *Walletdb {
 	return &Walletdb{db: db}
 }
 
-
 func (r *Walletdb) GetWallet(ctx context.Context, walletID uuid.UUID) (*model.Wallet, error) {
 
 	var wallet model.Wallet
@@ -44,9 +43,6 @@ func (r *Walletdb) GetWallet(ctx context.Context, walletID uuid.UUID) (*model.Wa
 
 	return &wallet, nil
 }
-
-
-
 
 func (r *Walletdb) UpdateWalletBalance(ctx context.Context, walletID uuid.UUID, amount float64) error {
 	tx, err := r.db.Begin(ctx)
@@ -77,9 +73,6 @@ func (r *Walletdb) UpdateWalletBalance(ctx context.Context, walletID uuid.UUID, 
 	return tx.Commit(ctx)
 }
 
-
-
-
 func (r *Walletdb) CreateWallet(ctx context.Context, walletID uuid.UUID) error {
 	_, err := r.db.Exec(ctx,
 		"INSERT INTO wallets (id, balance) VALUES ($1, 0)", walletID)
@@ -88,7 +81,6 @@ func (r *Walletdb) CreateWallet(ctx context.Context, walletID uuid.UUID) error {
 	}
 	return nil
 }
-
 
 func InitDB(db *pgxpool.Pool) error {
 	_, err := db.Exec(context.Background(), `
@@ -101,8 +93,7 @@ func InitDB(db *pgxpool.Pool) error {
 	return err
 }
 
-
-func (s * Walletdb) ProcessOperation(ctx context.Context, op model.WalletOperation) error {
+func (s *Walletdb) ProcessOperation(ctx context.Context, op model.WalletOperation) error {
 
 	wallet, err := s.GetWallet(ctx, op.WalletID)
 	if err != nil {
@@ -121,9 +112,6 @@ func (s * Walletdb) ProcessOperation(ctx context.Context, op model.WalletOperati
 	}
 	return s.UpdateWalletBalance(ctx, op.WalletID, amount)
 }
-
-
-
 
 func (s *Walletdb) GetWalletBalance(ctx context.Context, walletID uuid.UUID) (float64, error) {
 	wallet, err := s.GetWallet(ctx, walletID)
