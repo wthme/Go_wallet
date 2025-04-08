@@ -66,7 +66,7 @@ func (r *Walletdb) UpdateWalletBalance(ctx context.Context, walletID uuid.UUID, 
 
 	newBalance := balance + amount
 	if newBalance < 0 {
-		return fmt.Errorf("insufficient funds")
+		return fmt.Errorf("YOU HAVE MONEY ONLY IN GTA SAN ANDREAS")
 	}
 
 	_, err = tx.Exec(ctx,
