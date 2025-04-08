@@ -18,8 +18,6 @@ func main() {
 		log.Fatalf("Error loading config.env file: %v", err)
 	}
 
-
-
 	dbPool, err := pgxpool.New(context.Background(), "postgresql://postgres:12345@valet:5432/postgres")
 	if err != nil {
 		log.Fatalf("Unable to connect to database: %v\n", err)
@@ -27,13 +25,10 @@ func main() {
 	defer dbPool.Close()
 
 	err = pglogic.InitDB(dbPool)
-	if err!= nil{
+	if err != nil {
 		log.Fatalf("Can`t get table: %v\n", err)
 	}
 	log.Println("Wallets table ready")
-
-
-
 
 	walletdb := pglogic.NewWalletdb(dbPool)
 	walletHandler := handlers.NewWalletHandler(*walletdb)
@@ -49,14 +44,4 @@ func main() {
 	if err != nil {
 		log.Fatalf("Problem with starting server %v", err)
 	}
-
-}
-
-
-func getDSN() string {
-	return "host=" + os.Getenv("PG_HOST") +
-			" user=" + os.Getenv("PG_USER") +
-			" password=" + os.Getenv("PG_PASS") +
-			" dbname=" + os.Getenv("PG_DB") +
-			" port=" + os.Getenv("PG_PORT")
 }

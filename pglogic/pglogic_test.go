@@ -21,17 +21,12 @@ func TestGetWallet(t *testing.T) {
 
 	walletID := uuid.New()
 
-
 	t.Run("Test Init Wallet", func(t *testing.T) {
 
 		_, err  := wdb.GetWallet(ctx , walletID)
 
 		assert.NoError(t, err)
 	})
-
-
-
-
 
 	t.Run("Test Deposit", func(t *testing.T) {
 		req := model.WalletOperation{
@@ -43,8 +38,6 @@ func TestGetWallet(t *testing.T) {
 		assert.NoError(t, err)
 		res ,_:= wdb.GetWalletBalance(ctx , req.WalletID)
 		assert.Equal(t, float64(1488), res)
-
-		// Verify balance
 	})
 
 
@@ -78,11 +71,18 @@ func TestGetWallet(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, float64(concurrentRequests), wallet.Balance)
 	})
+
+	t.Run("Test Withdraw", func(t *testing.T) {
+
+		req := model.WalletOperation{
+			WalletID:      walletID,
+			OperationType: model.WITHDRAW,
+			Amount:        20,
+		}
+		err := wdb.ProcessOperation(ctx , req)
+		assert.NoError(t, err)
+		res ,_:= wdb.GetWalletBalance(ctx , req.WalletID)
+		assert.Equal(t, float64(80), res)
+	})
+
 }
-
-
-
-
-
-
-
